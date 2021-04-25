@@ -9,7 +9,15 @@ script:
   - docker run -e CI=true zavanton/react-test npm run test
 
 after_success:
+  # build docker images
   - docker build -t zavanton/multi-client ./client
   - docker build -t zavanton/multi-nginx ./nginx
   - docker build -t zavanton/multi-server ./server
   - docker build -t zavanton/multi-worker ./worker
+  # login to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # push the images to Docker Hub
+  - docker push zavanton/multi-client
+  - docker push zavanton/multi-nginx
+  - docker push zavanton/multi-server
+  - docker push zavanton/multi-worker
