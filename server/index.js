@@ -32,17 +32,15 @@ const redisClient = redis.createClient({
   port: keys.redisPort,
   retry_strategy: () => 1000,
 });
-const redisPublisher = redisClient.duplicate();
+const publisher = redisClient.duplicate();
 
 // Express route handlers
-
 app.get('/', (req, res) => {
   res.send('Hi');
 });
 
 app.get('/values/all', async (req, res) => {
   const values = await pgClient.query('SELECT * from values');
-
   res.send(values.rows);
 });
 
@@ -60,7 +58,7 @@ app.post('/values', async (req, res) => {
   }
 
   redisClient.hset('values', index, 'Nothing yet!');
-  redisPublisher.publish('insert', index);
+  publisher.publish('insert', index);
   pgClient.query('INSERT INTO values(number) VALUES($1)', [index]);
 
   res.send({working: true});

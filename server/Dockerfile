@@ -1,5 +1,5 @@
 FROM node:alpine
-WORKDIR /app
+WORKDIR "/app"
 COPY package.json .
 RUN npm config set unsafe-perm true
 RUN npm install --force
